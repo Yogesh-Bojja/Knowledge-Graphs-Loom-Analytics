@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Graphs</title>
+
+	<link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
+		integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/graph.css') }}" rel="stylesheet">
+
+	<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js" type="text/javascript"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+	<script crossorigin="anonymous" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"></script>
+
+	<script src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js" type="module"></script>
+	<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+
+</head>
+
+<body>
+	<div class="container-fluid">
+
+
+		<div class="row flex-nowrap">
+
+			<main class="col ps-md-2">
+				<div class="row">
+					<header class="bd-subnavbar py-3">
+						<div
+							class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+							<a class="nav me-auto text-dark text-decoration-none">
+								<span class="fs-2" style="font-family: serif;"> Graph Visualisation
+								</span>
+							</a>
+
+							<div id="context-menu">
+								<div class="item" value="removeNode">
+									<i class="removeNode" value="removeNode"></i> Remove Node
+								</div>
+
+							</div>
+
+							<div id="context-menu-relationship">
+								<div class="item" value="removeRelationship">
+									<i class="removeNode" value="removeNode"></i> Remove Relationship
+								</div>
+
+							</div>
+
+							<div class="col-sm-1.5 px-5">
+								<button class="btn btn-success" id="Refresh" type="reset" type="submit" value="Refresh">
+									Refresh
+								</button>
+							</div>
+							<a class="border rounded-3 btn " data-bs-target="#sidebar" data-bs-toggle="collapse"
+								href="#" style="color: green;box-shadow: none; border: 1px solid #000 !important;"><i
+									class="hamburger"></i>
+								Menu</a>
+						</div>
+					</header>
+				</div>
+				<div class="row">
+					<div class="col-md-10">
+						<div id="viz">
+						</div>
+					</div>
+					<div class="col-sm-2" style="padding-right: 5px;">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title" id=cardTitle></h5>
+								<h6 class="card-subtitle mb-2 text-muted" id=cardSubTitle></h6>
+								<p class="card-text" id="info-card"></p>
+								<a class="card-option" data-toggle="showMore" href="#" id="showMore">
+									Show More
+								</a>
+								<p class="card-outcome" id="info-outcome" style="white-space: pre-line"></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</main>
+
+			<div class="col-auto px-0 " style="background: #fff;border: 1px solid rgb(0, 0, 0); border-top: none">
+				<div class="collapse collapse-horizontal show border-end" id="sidebar">
+					<div class="list-group border-0 rounded-0 text-sm-start" id="sidebar-nav">
+						<span class="fs-2 style"> Get More Done </span>
+
+						<ul class="list-group list-group-flush ">
+							<li class="list-group-item">
+								<sapn class="fs-6 style">Filter Node Labels </sapn>
+							</li>
+							<li class="list-group-item">
+
+								<select id=nodeFilterSelect>
+								</select>
+							</li>
+						</ul>
+						<ul class="list-group list-group-flush">
+							<li class="list-group-item">
+								<span class="fs-6 style">Filter Relation Types</span>
+							</li>
+							<li class="list-group-item">
+								<div class="dropdown" data-control="checkbox-dropdown" id="drop">
+									<label class="dropdown-label">Select</label>
+
+									<div class="dropdown-list" id="relationFilterSelect">
+										<a class="dropdown-option" data-toggle="check-all" href="#" id="check-all">
+											Check All
+										</a>
+										<a class="dropdown-option" data-toggle="uncheck-all" href="#" id="uncheck-all">
+											UnCheck All
+										</a>
+									</div>
+								</div>
+							</li>
+						</ul>
+						<ul class="list-group list-group-flush ">
+							<li class="list-group-item" style="border-bottom: 1px solid green" ;>
+								<span class="fs-6 style">More Tools</span>
+							</li>
+							<li>
+								<div class="button dropdown">
+									<select id="colorselector">
+										<option class="default">Select Option</option>
+										<option value="node">Add Node</option>
+										<option value="renameNode">Rename Node</option>
+										<option value="nodeProperty">Set Node Property</option>
+										<option value="relationship">Add Relationship</option>
+										<option value="merge">Merge Node</option>
+										<option value="path">Shortest Path</option>
+										<option value="span">Spanning Tree</option>
+
+									</select>
+								</div>
+							</li>
+						</ul>
+						<div class="output">
+							<div id="node" class="colors node">
+
+								<form action=''>
+									<label>Node Name:</label>
+									<input type="text" id="NodeNameTextBox" placeholder="Enter a name..">
+									<!--       dropdown for selecting type of node -->
+									<label for="node">Node Type:</label>
+									<select id="NodeType" name="node">
+									</select>
+
+									<div class="submit_btn">
+										<input type="button" id="createNodeClick" value="ADD">
+									</div>
+								</form>
+							</div>
+							<!-- RENAME -->
+							<div id="renameNode" class="colors renameNode">
+								<form action=''>
+									<label for="node_select">Selected Node</label>
+									<input type="text" id="nodeRename" placeholder="Node Id" disabled>
+
+									<label for="node_select">Selected Node Name</label>
+									<input type="text" id="nodeRenameCurrent" placeholder="Node Name" disabled>
+
+									<label>New Node Name:</label>
+									<input type="text" id="nodeRenameTextBox" placeholder="Enter new name..">
+
+									<div class="submit_btn">
+										<input type="button" id="nodeRenameClick" value="RENAME">
+									</div>
+								</form>
+							</div>
+
+							<!--   Merge Node -->
+
+							<div id="merge" class="colors merge">
+								<form action=''>
+									<!--  2  input boxes for dynamically returning node  -->
+
+									<label for="node_select">Selected Node 1</label>
+									<input type="text" id="node1merge" placeholder="Node 1" disabled>
+
+
+									<!--Selected Node 1 DYNAMIC description box  -->
+									<p id='nodeDescription1'> </p>
+
+									<label for="node">Selected Node 2</label>
+									<input type="text" id="node2merge" placeholder="Node 2" disabled>
+
+
+									<!--Selected Node 2 DYNAMIC description box   -->
+									<p id='nodeDescription2'> </p>
+
+									<!--  Submit button -->
+									<div class="submit_btn">
+										<input type="button" id="mergeClick" value="MERGE">
+									</div>
+								</form>
+							</div>
+
+							<!-- END Merge -->
+
+
+							<!-- SetNodeProperty -->
+
+							<div id="nodeProperty" class="colors nodeProperty">
+
+								<form action=''>
+									<label for="node_select">Selected Node</label>
+									<input type="text" id="nodePropertyID" placeholder="Node Id" disabled>
+
+									<label>Node Property Name:</label>
+									<input type="text" id="nodePropertyName" placeholder="Enter new name..">
+
+									<label>Node Property Value:</label>
+									<input type="text" id="nodePropertyValue" placeholder="Enter new value..">
+
+									<div class="submit_btn">
+										<input type="button" id="nodePropertyClick" value="SET">
+									</div>
+								</form>
+							</div>
+
+							<!-- ADD RELATIONSHIP -->
+
+							<div id="relationship" class="colors relationship">
+								<form action=''>
+									<!-- 2 input boxes for dynamically returning node  -->
+									<label for="node_select">Selected Node 1</label>
+									<input type="text" id="node1" placeholder="Node 1" disabled>
+									<label for="node">Selected Node 2</label>
+									<input type="text" id="node2" placeholder="Node 2" disabled>
+
+									<!--  input box for relationship type -->
+									<label>Relationship Type:</label>
+									<input type="text" id="relationshipType" placeholder="Enter a relationship..">
+
+									<!--     submit button -->
+									<div class="submit_btn">
+										<input type="button" id="addRelationshipClick" value="ADD">
+									</div>
+								</form>
+							</div>
+
+							<!-- shortest path -->
+
+							<div id="path" class="colors path">
+								<form action=''>
+									<!-- 2 input boxes for dynamically returning node  -->
+
+									<label for="node_select">Selected Node 1</label>
+									<input type="text" id="node1path" placeholder="Node 1" disabled>
+									<label for="node">Selected Node 2</label>
+									<input type="text" id="node2path" placeholder="Node 2" disabled>
+
+									<!--     submit button -->
+									<div class="submit_btn">
+										<input type="button" id="pathClick" value="SUBMIT">
+									</div>
+
+								</form>
+							</div>
+
+							<div id="span" class="colors span">
+								<form action=''>
+									<!-- 2 input boxes for dynamically returning node  -->
+
+									<label for="node_select">Selected Node</label>
+									<input type="text" id="nodeSpan" placeholder="Node" disabled>
+
+									<!--     submit button -->
+									<div class="submit_btn">
+										<input type="button" id="spanClick" value="SUBMIT">
+									</div>
+
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+<script src="{{ url_for('static', filename='js/load_graph.js') }}"></script>
+
+</html>
